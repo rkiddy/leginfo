@@ -1,0 +1,14 @@
+#!/bin/sh
+
+cd /home/ray/Projects/Leginfo
+
+if [ "$1" != "--no-download" ]; then
+    ./01_download_latest
+fi
+
+./02_unzip_data
+
+./03_delete_extra_data
+
+./04_import_data
+
