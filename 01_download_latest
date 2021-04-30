@@ -66,6 +66,6 @@ echo "Confirm at http://downloads.leginfo.legislature.ca.gov/" >> /tmp/log001.tx
 
 echo "" >> /tmp/log001.txt
 
-/usr/bin/mail -s 'CA Legislature Daily Data Fetch' ray@ganymede.org < /tmp/log001.txt
+# /usr/bin/mail -s 'CA Legislature Daily Data Fetch' YOUR_EMAIL_HERE < /tmp/log001.txt
 
 exit 0
