@@ -8,3 +8,5 @@ thanx - ray
 
 email to ray _at_ ganymede _dot_ org.
 
+Please see: https://medium.com/@bre/the-cult-of-done-manifesto-724ca1c2ff13
+
