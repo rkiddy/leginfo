@@ -1,7 +1,5 @@
 #!/bin/sh -vx
 
-cd ~/Projects/Leginfo
-
 echo "" > /tmp/log001.txt
 
 if [ -f /tmp/list.html ]; then
@@ -52,6 +50,12 @@ echo "" >> /tmp/log001.txt
 # 2016_12_14_2120_pubinfo_daily_Wed
 # 2016_12_15_2120_pubinfo_daily_Thu
 # 2016_12_16_2120_pubinfo_daily_Fri
+
+if [ ! -d data ]; then
+
+    mkdir data
+
+fi
 
 tail -1 /tmp/log003.txt | \
 awk 'BEGIN{FS="_"}

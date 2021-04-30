@@ -1,7 +1,5 @@
 #!/bin/sh
 
-cd /home/ray/Projects/Leginfo
-
 if [ "$1" != "--no-download" ]; then
     ./01_download_latest
 fi

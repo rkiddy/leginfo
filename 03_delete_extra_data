@@ -1,7 +1,5 @@
 #!/bin/sh
 
-cd ~/Projects/Leginfo/data
-
 echo "show databases;" | \
     mysql --skip-column-names | \
     grep pubinfo_daily_ |
