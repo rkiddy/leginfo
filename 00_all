@@ -1,12 +1,22 @@
-#!/bin/sh
+#!/bin/bash
+
+cd ~/Projects/leginfo
 
 if [ "$1" != "--no-download" ]; then
-    ./01_download_latest
+    echo ""
+    echo "downloading..."
+    db=`./01_download_latest`
+    echo "found db: $db"
+else
+    db=$2
+    echo "setting db: $db"
 fi
 
-./02_unzip_data
+echo "unzipping..."
 
-./03_delete_extra_data
+./02_unzip_data $db
 
-./04_import_data
+echo "importing..."
+
+./03_import_data $db
 

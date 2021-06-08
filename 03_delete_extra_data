@@ -1,9 +1,0 @@
-#!/bin/sh
-
-echo "show databases;" | \
-    mysql --skip-column-names | \
-    grep pubinfo_daily_ |
-    awk '{print "drop database",$0";"}' | \
-    mysql -vvv
-
-exit 0

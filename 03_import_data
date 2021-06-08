@@ -1,6 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
-db=`find data/* -prune -type d | tail -1 | sed 's/data\///'`
+if [ "$1" != "" ]; then
+    db=$1
+else
+    db=`find data/* -prune -type d | tail -1 | sed 's/data\///'`
+fi
 
 echo "db is \"$db\""
 
@@ -83,8 +87,8 @@ echo "location_code_add.sh"
 echo "veto_message_add.sh"
 ./veto_message_add.sh $db
 
-if [ -f 04a_import_site_specific ]; then
-    ./04a_import_site_specific
+if [ -f 04_import_site_specific ]; then
+    ./04_import_site_specific $db
 fi
 
 exit
