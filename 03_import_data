@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# See the result of:
+#
+# show variables like 'secure_file_priv';
+#
+# This is the location that the files should be copied to.
+
 if [ "$1" != "" ]; then
     db=$1
 else
@@ -40,13 +46,9 @@ mysql $db < creates.sql
 
 # Now I have to copy the LOB files over to tmp and set ownership.
 #
-if [ -d /tmp/data ]; then
-    /bin/rm -rf /tmp/data
-fi
+find /var/lib/mysql-files/ -type f -exec /bin/rm {} \;
 
-mkdir /tmp/data
-
-find ./data/$db -type f -name \*\.lob -exec chmod \+r {} \; -exec cp \-v {} /tmp/data \;
+find ./data/$db -type f -name \*\.lob -exec chmod \+r {} \; -exec cp \-v {} /var/lib/mysql-files/ \;
 
 # Now on to the real importing....
 #
@@ -87,7 +89,56 @@ echo "location_code_add.sh"
 echo "veto_message_add.sh"
 ./veto_message_add.sh $db
 
+mysql -vvv $db <<SQL
+
+select
+  (select 'bill_analysis_tbl') as table_name,
+  (select count(0) from bill_analysis_tbl) as all_rows,
+  (select count(0) from bill_analysis_tbl where source_doc is not NULL and source_doc != '') as fixed_rows;
+select
+  (select 'bill_version_tbl') as table_name,
+  (select count(0) from bill_version_tbl) as all_rows,
+  (select count(0) from bill_version_tbl where bill_xml is not NULL and bill_xml != '') as fixed_rows;
+select
+  (select 'law_section_tbl') as table_name,
+  (select count(0) from law_section_tbl) as all_rows,
+  (select count(0) from law_section_tbl where content_xml is not NULL and content_xml != '') as fixed_rows;
+select
+  (select 'veto_message_tbl') as table_name,
+  (select count(0) from veto_message_tbl) as all_rows,
+  (select count(0) from veto_message_tbl where message is not NULL and message != '') as fixed_rows;
+--
+--
+SQL
+
+ba1=`echo "select count(0) from bill_analysis_tbl" | mysql --skip-column-names $db`
+ba2=`echo "select count(0) from bill_analysis_tbl where source_doc is not NULL and source_doc != ''" | mysql --skip-column-names $db`
+
+bv1=`echo "select count(0) from bill_version_tbl" | mysql --skip-column-names $db`
+bv2=`echo "select count(0) from bill_version_tbl where bill_xml is not NULL and bill_xml != ''" | mysql --skip-column-names $db`
+
+ls1=`echo "select count(0) from law_section_tbl" | mysql --skip-column-names $db`
+ls2=`echo "select count(0) from law_section_tbl where content_xml is not NULL and content_xml != ''" | mysql --skip-column-names $db`
+
+vm1=`echo "select count(0) from veto_message_tbl" | mysql --skip-column-names $db`
+vm2=`echo "select count(0) from veto_message_tbl where message is not NULL and message != ''" | mysql --skip-column-names $db`
+
+goodImport="true"
+
+if [ "$ba1" != "" ] && [ $ba1 != $ba2 ]; then goodImport = "false"; fi
+if [ "$bv1" != "" ] && [ $bv1 != $bv2 ]; then goodImport = "false"; fi
+if [ "$ls1" != "" ] && [ $ls1 != $ls2 ]; then goodImport = "false"; fi
+if [ "$vm1" != "" ] && [ $vm1 != $vm2 ]; then goodImport = "false"; fi
+
+if [ "$goodImport" != "true" ]; then
+    echo ""
+    echo "BAD IMPORT. Stopping."
+    echo ""
+    exit 1
+fi
+
 if [ -f 04_import_site_specific ]; then
+    echo "04_import_site_specific ?"
     ./04_import_site_specific $db
 fi
 

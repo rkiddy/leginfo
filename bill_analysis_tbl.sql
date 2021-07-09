@@ -22,4 +22,4 @@ LOAD DATA LOCAL
   ,TRANS_UID
   ,TRANS_UPDATE
 )
-SET SOURCE_DOC=LOAD_FILE(concat('/tmp/data/',@var1))
+SET SOURCE_DOC=LOAD_FILE(concat('/var/lib/mysql-files/',@var1))
